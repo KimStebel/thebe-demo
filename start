@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# thebe
+
+git clone git@github.com:KimStebel/thebe.git thebe
+cd thebe
+npm install -g requirejs
+npm install -g coffee-script
+coffee -cbm .
+bower install
+cd static
+r.js -o build.js baseUrl=. name=almond include=main out=main-built.js 
+
+cd ../..
+
 # stop and remove all docker images
 
 docker stop $( docker ps -a --filter 'name=jupyter' -q)
