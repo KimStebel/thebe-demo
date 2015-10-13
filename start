@@ -2,10 +2,11 @@
 
 # thebe
 
+
 git clone git@github.com:KimStebel/thebe.git thebe
 cd thebe
-npm install -g requirejs
-npm install -g coffee-script
+git checkout master
+git pull
 coffee -cbm .
 bower install
 cd static
