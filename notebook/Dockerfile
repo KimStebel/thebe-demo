@@ -5,6 +5,40 @@ MAINTAINER Kim Stebel <kim.stebel@gmail.com>
 # Install system libraries first as root
 USER root
 
+WORKDIR /
+
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+    wget 
+
+# Configure environment
+ENV CONDA_DIR /opt/conda
+ENV PATH $CONDA_DIR/bin:$PATH
+ENV SHELL /bin/bash
+ENV NB_USER jovyan
+ENV NB_UID 1000
+
+# Install conda
+RUN mkdir -p $CONDA_DIR && \
+    echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh && \
+    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-3.9.1-Linux-x86_64.sh && \
+    echo "6c6b44acdd0bc4229377ee10d52c8ac6160c336d9cdd669db7371aa9344e1ac3 *Miniconda3-3.9.1-Linux-x86_64.sh" | sha256sum -c - && \
+    /bin/bash /Miniconda3-3.9.1-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
+    rm Miniconda3-3.9.1-Linux-x86_64.sh && \
+    $CONDA_DIR/bin/conda install --yes conda==3.14.1
+
+# Create jovyan user with UID=1000 and in the 'users' group
+# Grant ownership over the conda dir and home dir, but stick the group as root.
+RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    mkdir /home/$NB_USER/work && \
+    mkdir /home/$NB_USER/.jupyter && \
+    mkdir /home/$NB_USER/.local && \
+    chown -R $NB_USER:users $CONDA_DIR && \
+    chown -R $NB_USER:users /home/$NB_USER
+
+RUN chown -R $NB_USER:users /home/$NB_USER/.jupyter
+
+
+
 # Julia dependencies
 #RUN apt-get update &&  \
 #    apt-get install -y julia libnettle4 && \
@@ -36,7 +70,7 @@ USER root
 # Spark dependencies
 ENV APACHE_SPARK_VERSION 1.4.1
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-7-jre-headless && \
+    apt-get install -y --no-install-recommends openjdk-7-jre-headless wget && \
     apt-get clean
 RUN wget -qO - http://d3kbcqa49mib13.cloudfront.net/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz | tar -xz -C /usr/local/ && \
     cd /usr/local && \
