@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
 ENV CONDA_DIR /opt/conda
 ENV PATH $CONDA_DIR/bin:$PATH
 ENV SHELL /bin/bash
-ENV NB_USER jovyan
-ENV NB_UID 1000
+ENV NB_USER root
+ENV NB_UID 0
 
 # Install conda
 RUN mkdir -p $CONDA_DIR && \
@@ -26,17 +26,9 @@ RUN mkdir -p $CONDA_DIR && \
     rm Miniconda3-3.9.1-Linux-x86_64.sh && \
     $CONDA_DIR/bin/conda install --yes conda==3.14.1
 
-# Create jovyan user with UID=1000 and in the 'users' group
-# Grant ownership over the conda dir and home dir, but stick the group as root.
-RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
-    mkdir /home/$NB_USER/work && \
-    mkdir /home/$NB_USER/.jupyter && \
-    mkdir /home/$NB_USER/.local && \
-    chown -R $NB_USER:users $CONDA_DIR && \
-    chown -R $NB_USER:users /home/$NB_USER
-
-RUN chown -R $NB_USER:users /home/$NB_USER/.jupyter
-
+RUN mkdir -p /root/work && \
+    mkdir -p /root/.jupyter && \
+    mkdir -p /root/.local
 
 
 # Julia dependencies
@@ -97,10 +89,7 @@ RUN cd /tmp && \
     apt-get remove -y sbt && \
     apt-get clean
 
-# Now switch to jovyan for all conda and other package manager installs
-USER jovyan
-
-ENV PATH /home/jovyan/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.8.4/bin:/opt/happy/1.19.4/bin:/opt/alex/3.1.3/bin:$PATH
+ENV PATH /root/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.8.4/bin:/opt/happy/1.19.4/bin:/opt/alex/3.1.3/bin:$PATH
 ENV SPARK_HOME /usr/local/spark
 ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.8.2.1-src.zip
 
@@ -140,8 +129,8 @@ RUN $CONDA_DIR/envs/python2/bin/python \
 
 # Clone featured notebooks before adding local content to avoid recloning
 # everytime something changes locally
-RUN mkdir -p /home/jovyan/work/communities && \
-    mkdir -p /home/jovyan/work/featured
+RUN mkdir -p /root/work/communities && \
+    mkdir -p /root/work/featured
 #RUN git clone --depth 1 https://github.com/jvns/pandas-cookbook.git /home/jovyan/work/featured/pandas-cookbook/
 #RUN git clone --depth 1 https://github.com/gibiansky/IHaskell.git /home/jovyan/work/IHaskell/ && \
 #    mv /home/jovyan/work/IHaskell/ihaskell-display/ihaskell-widgets/Examples /home/jovyan/work/featured/ihaskell-widgets && \
@@ -150,24 +139,19 @@ RUN mkdir -p /home/jovyan/work/communities && \
 # Add local content, starting with notebooks and datasets which are the largest
 # so that later, smaller file changes do not cause a complete recopy during 
 # build
-#COPY notebooks/ /home/jovyan/work/
-#COPY datasets/ /home/jovyan/work/datasets/
+#COPY notebooks/ /root/work/
+#COPY datasets/ /root/work/datasets/
 
 # Add Scala kernel spec
-RUN mkdir -p /opt/conda/share/jupyter/kernels/scala
-COPY resources/kernel.json /opt/conda/share/jupyter/kernels/scala/
+RUN mkdir -p /usr/local/share/jupyter/kernels/scala
+COPY resources/kernel.json /usr/local/share/jupyter/kernels/scala/
 
-RUN pip install --user --no-cache-dir cloudant
-
-# Switch back to root for permission fixes, conversions, and trust. Make sure
-# trust is done as jovyan so that the signing secret winds up in the jovyan
-# profile, not root's
-USER root
+RUN pip3 install --no-cache-dir cloudant
+RUN pip2 install --no-cache-dir cloudant
 
 # Convert notebooks to the current format and trust them
-RUN find /home/jovyan/work -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \; && \
-    chown -R jovyan:users /home/jovyan && \
-    sudo -u jovyan env "PATH=$PATH" find /home/jovyan/work -name '*.ipynb' -exec ipython trust {} \;
+RUN find /root/work -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \; && \
+    env "PATH=$PATH" find /root/work -name '*.ipynb' -exec ipython trust {} \;
 
 # Finally, add the site specific tmpnb.org / try.jupyter.org configuration.
 # These should probably be split off into a separate docker image so that others
@@ -183,6 +167,6 @@ RUN chmod a+rX /srv/templates
 
 # Append tmpnb specific options to the base config
 COPY resources/jupyter_notebook_config.partial.py /tmp/
-RUN cat /tmp/jupyter_notebook_config.partial.py >> /home/jovyan/.jupyter/jupyter_notebook_config.py && \
+RUN cat /tmp/jupyter_notebook_config.partial.py >> /root/.jupyter/jupyter_notebook_config.py && \
     rm /tmp/jupyter_notebook_config.partial.py
     
