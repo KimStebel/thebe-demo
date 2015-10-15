@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# stop and remove all docker images
+
+docker stop $( docker ps -a --filter 'name=jupyter' -q)
+docker rm $( docker ps -a --filter 'name=jupyter' -q)
+docker stop tmpnb
+docker rm tmpnb
+docker stop proxy
+docker rm proxy
+
