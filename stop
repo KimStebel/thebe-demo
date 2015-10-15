@@ -8,4 +8,5 @@ docker stop tmpnb
 docker rm tmpnb
 docker stop proxy
 docker rm proxy
+ps a -o pid,command | grep SimpleHTTPServer | cut -d ' ' -f 1 | xargs kill
 
