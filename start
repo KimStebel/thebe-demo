@@ -3,12 +3,12 @@
 # thebe
 
 
-git clone git@github.com:KimStebel/thebe.git thebe
+git clone https://github.com/kimstebel/thebe.git thebe
 cd thebe
 git checkout master
 git pull
 coffee -cbm .
-bower install
+bower --allow-root --no-interactive install
 cd static
 r.js -o build.js baseUrl=. name=almond include=main out=main-built.js 
 
