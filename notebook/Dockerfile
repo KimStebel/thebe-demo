@@ -169,4 +169,9 @@ RUN chmod a+rX /srv/templates
 COPY resources/jupyter_notebook_config.partial.py /tmp/
 RUN cat /tmp/jupyter_notebook_config.partial.py >> /root/.jupyter/jupyter_notebook_config.py && \
     rm /tmp/jupyter_notebook_config.partial.py
+
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends nodejs-legacy npm && \
+    npm install -g ijavascript && \
+    ijs --ijs-install=global
+
     
