@@ -171,6 +171,7 @@ RUN cat /tmp/jupyter_notebook_config.partial.py >> /root/.jupyter/jupyter_notebo
     rm /tmp/jupyter_notebook_config.partial.py
 
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends nodejs-legacy npm && \
+    npm install -g cloudant && \
     npm install -g ijavascript && \
     ijs --ijs-install=global
 
