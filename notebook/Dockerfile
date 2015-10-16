@@ -175,4 +175,6 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends nod
     npm install -g ijavascript && \
     ijs --ijs-install=global
 
+ENV NODE_PATH /usr/local/lib/node_modules/
+
     
