@@ -177,4 +177,4 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends nod
 
 ENV NODE_PATH /usr/local/lib/node_modules/
 
-    
+RUN pip2 install bash_kernel && python2 -m bash_kernel.install
