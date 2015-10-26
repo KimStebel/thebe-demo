@@ -2,11 +2,11 @@
 
 # stop and remove all docker images
 
-docker stop $( docker ps -a --filter 'name=jupyter' -q)
-docker rm $( docker ps -a --filter 'name=jupyter' -q)
 docker stop tmpnb
 docker rm tmpnb
 docker stop proxy
 docker rm proxy
+docker stop $( docker ps -a --filter 'name=jupyter' -q)
+docker rm $( docker ps -a --filter 'name=jupyter' -q)
 ps a -o pid,command | grep SimpleHTTPServer | cut -d ' ' -f 1 | xargs --no-run-if-empty kill
 
