@@ -170,10 +170,9 @@ COPY resources/jupyter_notebook_config.partial.py /tmp/
 RUN cat /tmp/jupyter_notebook_config.partial.py >> /root/.jupyter/jupyter_notebook_config.py && \
     rm /tmp/jupyter_notebook_config.partial.py
 
+#javascript / node
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     nodejs-legacy \
-    curl \
-    jq \
     npm && \
     npm install -g cloudant && \
     npm install -g ijavascript && \
@@ -182,4 +181,10 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
 
 ENV NODE_PATH /usr/local/lib/node_modules/
 
-RUN pip3 install ipywidgets metakernel_bash
+#bash, curl, jq, netcat
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
+    curl \
+    netcat \
+    jq && \
+    pip3 install ipywidgets metakernel_bash
+
