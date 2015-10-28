@@ -188,3 +188,10 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     jq && \
     pip3 install ipywidgets metakernel_bash
 
+#add datasets
+COPY datasets/ /datasets/
+
+#add pyspark kernel spec
+RUN mkdir -p /usr/local/share/jupyter/kernels/pyspark
+COPY resources/pyspark/kernel.json /usr/local/share/jupyter/kernels/pyspark/
+
