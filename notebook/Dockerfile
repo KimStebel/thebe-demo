@@ -195,3 +195,10 @@ COPY datasets/ /datasets/
 RUN mkdir -p /usr/local/share/jupyter/kernels/pyspark
 COPY resources/pyspark/kernel.json /usr/local/share/jupyter/kernels/pyspark/
 
+# install leiningen
+RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod +x lein && mv lein /usr/bin/ && lein
+
+# install clojupyter
+RUN git clone https://github.com/kimstebel/clojupyter && cd clojupyter && make && make install && cp -r /root/.ipython/kernels/clojure /usr/local/share/jupyter/kernels/
+
+
