@@ -2,7 +2,6 @@ FROM jupyter/notebook
 
 MAINTAINER Kim Stebel <kim.stebel@gmail.com>
 
-# Install system libraries first as root
 USER root
 
 WORKDIR /
@@ -179,12 +178,15 @@ RUN wget -qO - http://d3kbcqa49mib13.cloudfront.net/spark-${APACHE_SPARK_VERSION
     ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.3 spark
 
 # add Scala Spark kernel
-ADD resources/spark-kernel/* /opt/sparkkernel/
+RUN mkdir -p /opt/sparkkernel/bin /opt/sparkkernel/lib
+COPY resources/spark-kernel/bin/spark-kernel /opt/sparkkernel/bin/
+COPY resources/spark-kernel/lib/kernel-assembly-* /opt/sparkkernel/lib/
+COPY resources/spark-kernel/VERSION /opt/sparkkernel/
 RUN chmod +x /opt/sparkkernel
 
 # Add Scala Spark kernel spec
 RUN mkdir -p /usr/local/share/jupyter/kernels/scala
-COPY resources/kernel.json /usr/local/share/jupyter/kernels/scala/
+COPY resources/spark-kernel.json /usr/local/share/jupyter/kernels/scala/kernel.json
 
 ENV SPARK_HOME /usr/local/spark
 
