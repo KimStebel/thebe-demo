@@ -30,7 +30,6 @@ RUN mkdir -p /root/work && \
     mkdir -p /root/.jupyter && \
     mkdir -p /root/.local
 
-
 # Julia dependencies
 #RUN apt-get update &&  \
 #    apt-get install -y julia libnettle4 && \
@@ -59,38 +58,7 @@ RUN mkdir -p /root/work && \
 #    apt-get clean
 #RUN gem install --no-rdoc --no-ri sciruby-full
 
-# Spark dependencies
-ENV APACHE_SPARK_VERSION 1.4.1
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-7-jre-headless wget && \
-    apt-get clean
-RUN wget -qO - http://d3kbcqa49mib13.cloudfront.net/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz | tar -xz -C /usr/local/ && \
-    cd /usr/local && \
-    ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6 spark
-
-# Scala Spark kernel (build and cleanup)
-RUN cd /tmp && \
-    echo deb http://dl.bintray.com/sbt/debian / > /etc/apt/sources.list.d/sbt.list && \
-    apt-get update && \
-    git clone https://github.com/ibm-et/spark-kernel.git && \
-    apt-get install -yq --force-yes --no-install-recommends sbt && \
-    cd spark-kernel && \
-    sbt compile -Xms1024M \
-        -Xmx2048M \
-        -Xss1M \
-        -XX:+CMSClassUnloadingEnabled \
-        -XX:MaxPermSize=1024M && \
-    sbt pack && \
-    mv kernel/target/pack /opt/sparkkernel && \
-    chmod +x /opt/sparkkernel && \
-    rm -rf ~/.ivy2 && \
-    rm -rf ~/.sbt && \
-    rm -rf /tmp/spark-kernel && \
-    apt-get remove -y sbt && \
-    apt-get clean
-
 ENV PATH /root/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.8.4/bin:/opt/happy/1.19.4/bin:/opt/alex/3.1.3/bin:$PATH
-ENV SPARK_HOME /usr/local/spark
 ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.8.2.1-src.zip
 
 # Python packages
@@ -142,10 +110,6 @@ RUN mkdir -p /root/work/communities && \
 #COPY notebooks/ /root/work/
 #COPY datasets/ /root/work/datasets/
 
-# Add Scala kernel spec
-RUN mkdir -p /usr/local/share/jupyter/kernels/scala
-COPY resources/kernel.json /usr/local/share/jupyter/kernels/scala/
-
 RUN pip3 install --no-cache-dir cloudant
 RUN pip2 install --no-cache-dir cloudant
 
@@ -195,10 +159,33 @@ COPY datasets/ /datasets/
 RUN mkdir -p /usr/local/share/jupyter/kernels/pyspark
 COPY resources/pyspark/kernel.json /usr/local/share/jupyter/kernels/pyspark/
 
+
+# install java 7
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openjdk-7-jre-headless && \
+    apt-get clean
+
 # install leiningen
 RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod +x lein && mv lein /usr/bin/ && lein
 
 # install clojupyter
 RUN git clone https://github.com/kimstebel/clojupyter && cd clojupyter && make && make install && cp -r /root/.ipython/kernels/clojure /usr/local/share/jupyter/kernels/
+
+
+# Spark dependencies
+ENV APACHE_SPARK_VERSION 1.5.1
+RUN wget -qO - http://d3kbcqa49mib13.cloudfront.net/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.3.tgz | tar -xz -C /usr/local/ && \
+    cd /usr/local && \
+    ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.3 spark
+
+# add Scala Spark kernel
+ADD resources/spark-kernel/* /opt/sparkkernel/
+RUN chmod +x /opt/sparkkernel
+
+# Add Scala Spark kernel spec
+RUN mkdir -p /usr/local/share/jupyter/kernels/scala
+COPY resources/kernel.json /usr/local/share/jupyter/kernels/scala/
+
+ENV SPARK_HOME /usr/local/spark
 
 
