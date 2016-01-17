@@ -21,7 +21,4 @@ docker pull "$notebook_image"
 export TOKEN=$( head -c 30 /dev/urandom | xxd -p )
 docker run -v /root/ssl/:/ssl/   --net=host -d -e CONFIGPROXY_AUTH_TOKEN=$TOKEN --name=proxy jupyter/configurable-http-proxy --default-target http://127.0.0.1:9999 --ssl-key /ssl/kimstebel.key --ssl-cert /ssl/kimstebel.crt --ssl-ca /ssl/kimstebel.ca
 docker run --net=host -d -e CONFIGPROXY_AUTH_TOKEN=$TOKEN --name=tmpnb -v /var/run/docker.sock:/docker.sock jupyter/tmpnb python orchestrate.py --image="$notebook_image" --command="ipython notebook --no-browser --NotebookApp.base_url={base_path} --ip=0.0.0.0 --port {port} --NotebookApp.allow_origin='*' " --cull-timeout=300 --cull_period=60 --allow_origin="*" --pool_size=20 --pool_name=jupyter
-nohup python -m SimpleHTTPServer 8080 2>&1 >/dev/null &
-#curl -H "Authorization: token $TOKEN" http://localhost:8001/api/routes/thebe -X POST -d '{"target":"http://127.0.0.1:8080"}'
-echo 'now point your browser to http://localhost:8080/thebe/test.html'
 
