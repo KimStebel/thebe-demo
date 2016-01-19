@@ -1,0 +1,28 @@
+#!/bin/bash
+
+resp=$(curl -s 'https://tmpnb.kimstebel.com:8000/api/stats')
+echo "$resp"
+image=$(echo "$resp" | jq -r '.container_image')
+
+#{
+#  "available": 20,
+#  "container_image": "kimstebel/thebe-demo-notebook",
+#  "version": "0.1.0",
+#  "capacity": 20
+#}
+
+# check that available > 0 and get image name
+
+resp=$(curl -s 'https://tmpnb.kimstebel.com:8000/api/spawn' -X POST --data-binary "{\"image_name\": \"${image}\"}")
+echo "$resp"
+# {"url": "user/..."}
+
+url=$(echo "$resp" | jq -r '.url')
+echo "the url is $url"
+
+resp=$(curl https://tmpnb.kimstebel.com:8000/$url/api/kernels -X POST -d '{"name": "javascript"}')
+echo "$resp"
+# {"id": "...", "name": "javascript"}
+id=$(echo $resp | jq -r '.id')
+
+wsd "-url=ws://tmpnb.kimstebel.com:8000/$url/api/kernels/$id/channels?session_id=abc"
