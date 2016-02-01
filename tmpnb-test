@@ -25,4 +25,5 @@ echo "$resp"
 # {"id": "...", "name": "javascript"}
 id=$(echo $resp | jq -r '.id')
 
-wsd "-url=ws://tmpnb.kimstebel.com:8000/$url/api/kernels/$id/channels?session_id=abc"
+~/gocode/bin/wsd "-url=ws://tmpnb.kimstebel.com:8000/$url/api/kernels/$id/channels?session_id=abc"
+
