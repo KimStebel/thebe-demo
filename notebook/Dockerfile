@@ -29,27 +29,6 @@ RUN mkdir -p /root/work && \
     mkdir -p /root/.jupyter && \
     mkdir -p /root/.local
 
-# Julia dependencies
-#RUN apt-get update &&  \
-#    apt-get install -y julia libnettle4 && \
-#    apt-get clean
-
-# R dependencies that conda can't provide (X, fonts, compilers)
-#RUN apt-get update && \
-#    apt-get install -y libxrender1 fonts-dejavu gfortran gcc && \
-#    apt-get clean
-
-# The Glorious Glasgow Haskell Compiler
-#RUN apt-get update && \
-#    apt-get install -y --no-install-recommends software-properties-common && \
-#    add-apt-repository -y ppa:hvr/ghc && \
-#    sed -i s/jessie/trusty/g /etc/apt/sources.list.d/hvr-ghc-jessie.list && \
-#    apt-get update && \
-#    apt-get install -y cabal-install-1.22 ghc-7.8.4 happy-1.19.4 alex-3.1.3 && \
-#    apt-get clean
-
-# IHaskell dependencies
-#RUN apt-get install -y --no-install-recommends zlib1g-dev libzmq3-dev libtinfo-dev libcairo2-dev libpango1.0-dev && apt-get clean
 
 # Ruby dependencies
 #RUN apt-get install -y --no-install-recommends ruby ruby-dev libtool autoconf automake gnuplot-nox libsqlite3-dev libatlas-base-dev libgsl0-dev libmagick++-dev imagemagick && \
@@ -69,48 +48,16 @@ RUN $CONDA_DIR/envs/python2/bin/python \
     $CONDA_DIR/envs/python2/bin/ipython \
     kernelspec install-self --user
 
-# IRuby
-#RUN iruby register
-
 # R packages
 #RUN conda config --add channels r
 #RUN conda install --yes r-irkernel r-plyr r-devtools r-rcurl r-dplyr r-ggplot2 r-caret rpy2 r-tidyr r-shiny r-rmarkdown r-forecast r-stringr r-rsqlite r-reshape2 r-nycflights13 r-randomforest && conda clean -yt
-
-# IJulia and Julia packages
-#RUN julia -e 'Pkg.add("IJulia")'
-#RUN julia -e 'Pkg.add("Gadfly")' && julia -e 'Pkg.add("RDatasets")'
-
-# IHaskell + IHaskell-Widgets + Dependencies for examples
-#RUN cabal update && \
-#    CURL_CA_BUNDLE='/etc/ssl/certs/ca-certificates.crt' curl 'https://www.stackage.org/lts-2.22/cabal.config?global=true' >> ~/.cabal/config && \
-#    cabal install cpphs && \
-#    cabal install gtk2hs-buildtools && \
-#    cabal install ihaskell-0.8.0.0 --reorder-goals && \
-#    cabal install ihaskell-widgets-0.2.0.0 HTTP Chart Chart-cairo && \
-#    ihaskell install && \
-#    rm -fr $(echo ~/.cabal/bin/* | grep -iv ihaskell) ~/.cabal/packages ~/.cabal/share/doc ~/.cabal/setup-exe-cache ~/.cabal/logs
 
 # Extra Kernels
 #RUN pip install --user --no-cache-dir bash_kernel && \
 #    python -m bash_kernel.install
 
-# Clone featured notebooks before adding local content to avoid recloning
-# everytime something changes locally
-RUN mkdir -p /root/work/communities && \
-    mkdir -p /root/work/featured
-#RUN git clone --depth 1 https://github.com/jvns/pandas-cookbook.git /home/jovyan/work/featured/pandas-cookbook/
-#RUN git clone --depth 1 https://github.com/gibiansky/IHaskell.git /home/jovyan/work/IHaskell/ && \
-#    mv /home/jovyan/work/IHaskell/ihaskell-display/ihaskell-widgets/Examples /home/jovyan/work/featured/ihaskell-widgets && \
-#    rm -r /home/jovyan/work/IHaskell
-
-# Add local content, starting with notebooks and datasets which are the largest
-# so that later, smaller file changes do not cause a complete recopy during 
-# build
-#COPY notebooks/ /root/work/
-#COPY datasets/ /root/work/datasets/
-
 RUN pip3 install --no-cache-dir cloudant
-RUN pip2 install --no-cache-dir cloudant
+RUN $CONDA_DIR/bin/pip install --no-cache-dir cloudant
 
 # Convert notebooks to the current format and trust them
 RUN find /root/work -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \; && \
