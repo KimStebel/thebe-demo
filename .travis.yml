@@ -10,5 +10,5 @@ before_install:
 
 script:
 - cd notebook && docker build -t kimstebek/thebe-demo-notebook .
-
+- docker push 'kimstebel/thebe-demo-notebook'
 
