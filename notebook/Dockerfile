@@ -105,19 +105,6 @@ COPY datasets/ /datasets/
 RUN mkdir -p /usr/local/share/jupyter/kernels/pyspark
 COPY resources/pyspark/kernel.json /usr/local/share/jupyter/kernels/pyspark/
 
-
-# install java 7
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-7-jre-headless && \
-    apt-get clean
-
-# install leiningen
-RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod +x lein && mv lein /usr/bin/ && lein
-
-# install clojupyter
-RUN git clone https://github.com/kimstebel/clojupyter && cd clojupyter && make && make install && cp -r /root/.ipython/kernels/clojure /usr/local/share/jupyter/kernels/
-
-
 # Spark dependencies
 ENV APACHE_SPARK_VERSION 1.5.1
 RUN wget -qO - http://d3kbcqa49mib13.cloudfront.net/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.3.tgz | tar -xz -C /usr/local/ && \
@@ -137,4 +124,18 @@ COPY resources/spark-kernel.json /usr/local/share/jupyter/kernels/scala/kernel.j
 
 ENV SPARK_HOME /usr/local/spark
 
+# install java 7
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openjdk-7-jre-headless && \
+    apt-get clean
+
+# install leiningen
+RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod +x lein && mv lein /usr/bin/ && lein
+
+# install clojupyter
+RUN git clone https://github.com/kimstebel/clojupyter && \
+    cd clojupyter && \
+    make && \
+    make install && \
+    cp -r /root/.ipython/kernels/clojure /usr/local/share/jupyter/kernels/
 
