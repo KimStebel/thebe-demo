@@ -10,7 +10,9 @@ before_install:
 
 script:
 - cd notebook && docker build -t kimstebek/thebe-demo-notebook .
-- echo "$dockercfg" >~/.dockercfg
+- echo '{"https://index.docker.io/v1/":{"auth":"' >.dockercfg
+- echo "$dockercfg" >>~/.dockercfg
+- echo '", "email": "kim.stebel@gmail.com"}}' >>/.dockercfg
 - cat ~/.dockercfg
 - docker push 'kimstebel/thebe-demo-notebook'
 
