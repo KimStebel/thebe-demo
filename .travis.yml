@@ -11,6 +11,6 @@ before_install:
 script:
 - cd notebook && docker build -t kimstebek/thebe-demo-notebook .
 - echo "$dockercfg" >~/.dockercfg
+- cat ~/.dockercfg
 - docker push 'kimstebel/thebe-demo-notebook'
-
 
