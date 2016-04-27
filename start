@@ -3,7 +3,7 @@
 NOTEBOOK_IMAGE='kimstebel/thebe-demo-notebook'
 if [ -z "$1" ] ; then
   POOL_SIZE=50
-elif
+else
   POOL_SIZE="$1"
 fi
 TOKEN=$( head -c 30 /dev/urandom | xxd -p )
