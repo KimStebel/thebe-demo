@@ -1,26 +1,18 @@
 #!/bin/bash
 
-notebook_image='kimstebel/thebe-demo-notebook'
+NOTEBOOK_IMAGE='kimstebel/thebe-demo-notebook'
+if [ -z "$1" ] ; then
+  POOL_SIZE=50
+elif
+  POOL_SIZE="$1"
+fi
+TOKEN=$( head -c 30 /dev/urandom | xxd -p )
 
-# thebe
 
-git clone https://github.com/kimstebel/thebe.git thebe
-cd thebe
-git checkout demo
-git pull
-coffee -cbm .
-bower --allow-root --no-interactive install
-cd static
-r.js -o build.js baseUrl=. name=almond include=main out=main-built.js 
 
-cd ../..
-
-# start proxy, tmpnb, thebe
-
-docker pull "$notebook_image"
-export TOKEN=$( head -c 30 /dev/urandom | xxd -p )
+docker pull "$NOTEBOOK_IMAGE"
 docker run \
-  -v /root/ssl/:/ssl/ \
+  -v /ssl/:/ssl/ \
   --net=host -d \
   -e CONFIGPROXY_AUTH_TOKEN=$TOKEN \
   --name=proxy \
@@ -36,11 +28,11 @@ docker run \
   -v /var/run/docker.sock:/docker.sock \
   jupyter/tmpnb \
   python orchestrate.py \
-    --image="$notebook_image" \
+    --image="$NOTEBOOK_IMAGE" \
     --command="ipython notebook --no-browser --NotebookApp.base_url={base_path} --ip=0.0.0.0 --port {port} --NotebookApp.allow_origin='*' " \
     --cull-timeout=300 \
     --cull_period=60 \
     --allow_origin="*" \
-    --pool_size=20 \
+    --pool_size="$POOL_SIZE" \
     --pool_name=jupyter
 
