@@ -6,8 +6,7 @@ USER root
 
 WORKDIR /
 
-RUN apt-get update && apt-get install -yq --no-install-recommends \
-    wget 
+RUN apt-get update && apt-get install -yq --no-install-recommends wget
 
 # Configure environment
 ENV CONDA_DIR /opt/conda
@@ -86,7 +85,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     npm && \
     npm install -g cloudant && \
     npm install -g ijavascript && \
-    npm install -g git+https://github.com/ibm-cds-labs/gds-wrapper.git && \
+    npm install -g gds-wrapper && \
     ijs --ijs-install=global
 
 ENV NODE_PATH /usr/local/lib/node_modules/
