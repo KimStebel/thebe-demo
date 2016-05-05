@@ -79,17 +79,6 @@ COPY resources/jupyter_notebook_config.partial.py /tmp/
 RUN cat /tmp/jupyter_notebook_config.partial.py >> /root/.jupyter/jupyter_notebook_config.py && \
     rm /tmp/jupyter_notebook_config.partial.py
 
-#javascript / node
-RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
-    nodejs-legacy \
-    npm && \
-    npm install -g cloudant && \
-    npm install -g ijavascript && \
-    npm install -g gds-wrapper && \
-    ijs --ijs-install=global
-
-ENV NODE_PATH /usr/local/lib/node_modules/
-
 #bash, curl, jq, netcat
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     curl \
@@ -137,4 +126,16 @@ RUN git clone https://github.com/kimstebel/clojupyter && \
     make && \
     make install && \
     cp -r /root/.ipython/kernels/clojure /usr/local/share/jupyter/kernels/
+    
+#javascript / node
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
+    nodejs-legacy \
+    npm && \
+    npm install -g cloudant && \
+    npm install -g ijavascript && \
+    npm install -g 'git+https://github.com/KimStebel/gds-wrapper.git' && \
+    ijs --ijs-install=global
+
+ENV NODE_PATH /usr/local/lib/node_modules/
+
 
