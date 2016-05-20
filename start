@@ -18,9 +18,9 @@ docker run \
   --name=proxy \
   jupyter/configurable-http-proxy \
     --default-target 'http://127.0.0.1:9999' \
-    --ssl-key /ssl/kimstebel.key \
-    --ssl-cert /ssl/kimstebel.crt \
-    --ssl-ca /ssl/kimstebel.ca
+    --ssl-key /ssl/tmpnb.key \
+    --ssl-cert /ssl/tmpnb.crt \
+    --ssl-ca /ssl/tmpnb.ca
 docker run \
   --net=host -d \
   -e CONFIGPROXY_AUTH_TOKEN=$TOKEN \
