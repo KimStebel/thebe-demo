@@ -5,8 +5,8 @@ After=docker.service
 
 [Service]
 Restart=no
-ExecStart=/bin/bash -c "/home/ibmcloud/thebe-demo/stop; /home/ibmcloud/thebe-demo/start 50 >>/var/log/thebe-log"
-ExecStop=/bin/bash -c "echo stop called >>/var/log/thebe-log; date >>/var/log/thebe-log; /home/ibmcloud/thebe-demo/stop"
+ExecStart=/bin/bash -c "/opt/thebe-demo/stop; /opt/thebe-demo/start 50 >>/var/log/thebe"
+ExecStop=/bin/bash -c "echo stop called >>/var/log/thebe; date >>/var/log/thebe; /opt/thebe-demo/stop"
 RemainAfterExit=yes
 
 [Install]
