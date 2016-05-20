@@ -1,7 +1,7 @@
 # Setting up a tmpnb server
 
  * install git, docker
- * git checkout this repo
+ * git checkout this repo in `/opt/`
  * set up certificates in `/ssl/`, see start script for file names to use
  * configure dns
  * set up automatic updates: dpkg-reconfigure --priority=low unattended-upgrades
