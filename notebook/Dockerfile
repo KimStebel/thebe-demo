@@ -126,8 +126,11 @@ RUN git clone https://github.com/kimstebel/clojupyter && \
     make && \
     make install && \
     cp -r /root/.ipython/kernels/clojure /usr/local/share/jupyter/kernels/
-    
+
 #javascript / node
+
+ENV NODE_PATH /usr/local/lib/node_modules/
+
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     nodejs-legacy \
     npm && \
@@ -135,7 +138,5 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     npm install -g ijavascript && \
     npm install -g 'git+https://github.com/ibm-cds-labs/nodejs-graph.git' && \
     ijs --ijs-install=global
-
-ENV NODE_PATH /usr/local/lib/node_modules/
 
 
