@@ -136,7 +136,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     npm && \
     npm install -g cloudant && \
     npm install -g ijavascript && \
-    npm install -g 'git+https://github.com/ibm-cds-labs/nodejs-graph.git' && \
+    npm install -g ibm-graph-client && \
     ijs --ijs-install=global
 
 
