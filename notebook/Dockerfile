@@ -64,7 +64,7 @@ RUN find /root/work -name '*.ipynb' -exec ipython nbconvert --to notebook {} --o
 
 # Finally, add the site specific tmpnb.org / try.jupyter.org configuration.
 # These should probably be split off into a separate docker image so that others
-# can reuse the very expensive build of all the above with their own site 
+# can reuse the very expensive build of all the above with their own site
 # customization.
 
 # Expose our custom setup to the installed ipython (for mounting by nginx)
@@ -136,7 +136,5 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     npm && \
     npm install -g cloudant && \
     npm install -g ijavascript && \
-    npm install -g ibm-graph-client && \
+    npm install -g 'ibm-graph-client@0.3.4' && \
     ijs --ijs-install=global
-
-
