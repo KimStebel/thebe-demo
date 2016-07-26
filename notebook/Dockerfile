@@ -28,13 +28,6 @@ RUN mkdir -p /root/work && \
     mkdir -p /root/.jupyter && \
     mkdir -p /root/.local
 
-
-# Ruby dependencies
-#RUN apt-get install -y --no-install-recommends ruby ruby-dev libtool autoconf automake gnuplot-nox libsqlite3-dev libatlas-base-dev libgsl0-dev libmagick++-dev imagemagick && \
-#    ln -s /usr/bin/libtoolize /usr/bin/libtool && \
-#    apt-get clean
-#RUN gem install --no-rdoc --no-ri sciruby-full
-
 ENV PATH /root/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.8.4/bin:/opt/happy/1.19.4/bin:/opt/alex/3.1.3/bin:$PATH
 ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.8.2.1-src.zip
 
@@ -47,25 +40,12 @@ RUN $CONDA_DIR/envs/python2/bin/python \
     $CONDA_DIR/envs/python2/bin/ipython \
     kernelspec install-self --user
 
-# R packages
-#RUN conda config --add channels r
-#RUN conda install --yes r-irkernel r-plyr r-devtools r-rcurl r-dplyr r-ggplot2 r-caret rpy2 r-tidyr r-shiny r-rmarkdown r-forecast r-stringr r-rsqlite r-reshape2 r-nycflights13 r-randomforest && conda clean -yt
-
-# Extra Kernels
-#RUN pip install --user --no-cache-dir bash_kernel && \
-#    python -m bash_kernel.install
-
 RUN pip3 install --no-cache-dir cloudant
 RUN $CONDA_DIR/bin/pip install --pre --no-cache-dir cloudant
 
 # Convert notebooks to the current format and trust them
 RUN find /root/work -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \; && \
     env "PATH=$PATH" find /root/work -name '*.ipynb' -exec ipython trust {} \;
-
-# Finally, add the site specific tmpnb.org / try.jupyter.org configuration.
-# These should probably be split off into a separate docker image so that others
-# can reuse the very expensive build of all the above with their own site
-# customization.
 
 # Expose our custom setup to the installed ipython (for mounting by nginx)
 COPY resources/custom.js /opt/conda/lib/python3.4/site-packages/notebook/static/custom/
