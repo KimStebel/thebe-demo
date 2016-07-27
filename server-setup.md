@@ -10,5 +10,6 @@
    * adjust paths to fit your installation, if necessary
    * `sudo systemctl daemon-reload`
    * `sudo systemctl start tmpnb.service`
+   * `sudo systemctl enable tmpnb.service`
 
 
