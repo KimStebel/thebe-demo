@@ -9,7 +9,7 @@
    * copy `tmpnb.service.example` to `/lib/systemd/system/tmpnb.service`
    * adjust paths to fit your installation, if necessary
    * `sudo systemctl daemon-reload`
-   * `sudo systemctl start tmpnb.service`
+   * `sudo systemctl start tmpnb.service` (this will cause the docker service to download images in the background, which might take a while)
    * `sudo systemctl enable tmpnb.service`
 
 
