@@ -1,13 +1,15 @@
 # Setting up a tmpnb server
 
- * install git, docker
- * git checkout this repo in `/opt/`
- * set up certificates in `/ssl/`, see start script for file names to use
+ * install git, docker (follow instructions at https://docs.docker.com/engine/installation/linux/)
+ * git checkout this repo into `/opt/`
  * configure dns
- * set up automatic updates: dpkg-reconfigure --priority=low unattended-upgrades
+ * set up certificates in `/ssl/`, named `tmpnb.ca` (the full chain), `tmpnb.crt` (the certificate), and `tmpnb.key` (the private key)
+ * set up automatic updates: `dpkg-reconfigure --priority=low unattended-upgrades`
  * execute start script after docker starts using systemd
-   * copy `tmpnb.service.example` to /lib/systemd/system/tmpnb.service
-   * sudo systemctl daemon-reload
-   * sudo systemctl start tmpnb.service
+   * copy `tmpnb.service.example` to `/lib/systemd/system/tmpnb.service`
+   * adjust paths to fit your installation, if necessary
+   * `sudo systemctl daemon-reload`
+   * `sudo systemctl start tmpnb.service` (this will cause the docker service to download images in the background, which might take a while)
+   * `sudo systemctl enable tmpnb.service`
 
 
