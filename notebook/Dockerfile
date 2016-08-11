@@ -41,7 +41,7 @@ RUN $CONDA_DIR/envs/python2/bin/python \
     kernelspec install-self --user
 
 RUN pip3 install --no-cache-dir cloudant
-RUN $CONDA_DIR/bin/pip install --pre --no-cache-dir cloudant
+RUN $CONDA_DIR/bin/pip install --no-cache-dir cloudant
 
 # Convert notebooks to the current format and trust them
 RUN find /root/work -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \; && \
