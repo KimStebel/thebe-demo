@@ -71,3 +71,6 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     npm install -g ijavascript && \
     npm install -g 'ibm-graph-client@0.3.4' && \
     ijs --ijs-install=global
+
+# install cloudant library for python 2
+RUN $CONDA_DIR/envs/python2/bin/pip install --no-cache-dir cloudant
