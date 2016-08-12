@@ -28,8 +28,7 @@ RUN mkdir -p /root/work && \
     mkdir -p /root/.jupyter && \
     mkdir -p /root/.local
 
-ENV PATH /root/.cabal/bin:/opt/cabal/1.22/bin:/opt/ghc/7.8.4/bin:/opt/happy/1.19.4/bin:/opt/alex/3.1.3/bin:$PATH
-ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.8.2.1-src.zip
+ENV PATH /opt/happy/1.19.4/bin:/opt/alex/3.1.3/bin:$PATH
 
 # Python packages
 RUN conda install --yes numpy pandas scikit-learn scikit-image matplotlib scipy seaborn sympy cython patsy statsmodels cloudpickle dill numba bokeh beautiful-soup && conda clean -yt
@@ -40,12 +39,9 @@ RUN $CONDA_DIR/envs/python2/bin/python \
     $CONDA_DIR/envs/python2/bin/ipython \
     kernelspec install-self --user
 
+# install python cloudant library
 RUN pip3 install --no-cache-dir cloudant
 RUN $CONDA_DIR/bin/pip install --no-cache-dir cloudant
-
-# Convert notebooks to the current format and trust them
-RUN find /root/work -name '*.ipynb' -exec ipython nbconvert --to notebook {} --output {} \; && \
-    env "PATH=$PATH" find /root/work -name '*.ipynb' -exec ipython trust {} \;
 
 # Expose our custom setup to the installed ipython (for mounting by nginx)
 COPY resources/custom.js /opt/conda/lib/python3.4/site-packages/notebook/static/custom/
@@ -59,58 +55,15 @@ COPY resources/jupyter_notebook_config.partial.py /tmp/
 RUN cat /tmp/jupyter_notebook_config.partial.py >> /root/.jupyter/jupyter_notebook_config.py && \
     rm /tmp/jupyter_notebook_config.partial.py
 
-#bash, curl, jq, netcat
+# install bash kernel, curl, jq, netcat
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     curl \
     netcat \
     jq && \
     pip3 install ipywidgets metakernel_bash
 
-#add datasets
-COPY datasets/ /datasets/
-
-#add pyspark kernel spec
-RUN mkdir -p /usr/local/share/jupyter/kernels/pyspark
-COPY resources/pyspark/kernel.json /usr/local/share/jupyter/kernels/pyspark/
-
-# Spark dependencies
-ENV APACHE_SPARK_VERSION 1.5.1
-RUN wget -qO - http://d3kbcqa49mib13.cloudfront.net/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.3.tgz | tar -xz -C /usr/local/ && \
-    cd /usr/local && \
-    ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.3 spark
-
-# add Scala Spark kernel
-RUN mkdir -p /opt/sparkkernel/bin /opt/sparkkernel/lib
-COPY resources/spark-kernel/bin/spark-kernel /opt/sparkkernel/bin/
-COPY resources/spark-kernel/lib/kernel-assembly-* /opt/sparkkernel/lib/
-COPY resources/spark-kernel/VERSION /opt/sparkkernel/
-RUN chmod +x /opt/sparkkernel
-
-# Add Scala Spark kernel spec
-RUN mkdir -p /usr/local/share/jupyter/kernels/scala
-COPY resources/spark-kernel.json /usr/local/share/jupyter/kernels/scala/kernel.json
-
-ENV SPARK_HOME /usr/local/spark
-
-# install java 7
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-7-jre-headless && \
-    apt-get clean
-
-# install leiningen
-RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && chmod +x lein && mv lein /usr/bin/ && lein
-
-# install clojupyter
-RUN git clone https://github.com/kimstebel/clojupyter && \
-    cd clojupyter && \
-    make && \
-    make install && \
-    cp -r /root/.ipython/kernels/clojure /usr/local/share/jupyter/kernels/
-
-#javascript / node
-
+# javascript, node.js, ibm-graph-client for node.js
 ENV NODE_PATH /usr/local/lib/node_modules/
-
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
     nodejs-legacy \
     npm && \
