@@ -41,7 +41,7 @@ RUN $CONDA_DIR/envs/python2/bin/python \
 
 # install python cloudant library
 RUN pip3 install --no-cache-dir cloudant
-RUN $CONDA_DIR/bin/pip install --pre --no-cache-dir cloudant
+RUN $CONDA_DIR/bin/pip install --no-cache-dir cloudant
 
 # Expose our custom setup to the installed ipython (for mounting by nginx)
 COPY resources/custom.js /opt/conda/lib/python3.4/site-packages/notebook/static/custom/
