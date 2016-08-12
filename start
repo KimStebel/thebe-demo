@@ -29,7 +29,7 @@ docker run \
   jupyter/tmpnb \
   python orchestrate.py \
     --image="$NOTEBOOK_IMAGE" \
-    --command="jupyter notebook --allow-root --no-browser --NotebookApp.base_url={base_path} --ip=0.0.0.0 --port {port} --NotebookApp.allow_origin='*' " \
+    --command="jupyter notebook --no-browser --NotebookApp.base_url={base_path} --ip=0.0.0.0 --port {port} --NotebookApp.allow_origin='*' " \
     --cull-timeout=600 \
     --cull_period=60 \
     --allow_origin="*" \
